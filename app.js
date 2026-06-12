@@ -81,7 +81,7 @@ function showScreen(id) {
 
 // ── AUTH ─────────────────────────────────────────────────────
 const ACTION_CODE_SETTINGS = {
-"https://dwayneschreiner.github.io/Shopping/"
+url: window.location.href,
   handleCodeInApp: true,
 };
 
