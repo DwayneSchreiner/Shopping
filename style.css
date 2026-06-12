@@ -691,3 +691,124 @@ html, body {
    UTILS
    ===================== */
 .hidden { display: none !important; }
+
+/* =====================
+   FAB FULL WIDTH
+   ===================== */
+.fab-full {
+  flex: 1 !important;
+  width: 100%;
+}
+
+/* =====================
+   AUTH - compactere knop
+   ===================== */
+.auth-wrap .btn-primary {
+  padding: 11px;
+  font-size: 14px;
+  border-radius: var(--radius-md);
+}
+.auth-wrap {
+  padding: 24px 24px;
+}
+.auth-logo {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+.auth-title {
+  font-size: 22px;
+}
+.auth-sub {
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+/* =====================
+   ITEM SWIPE / LONG PRESS ACTIONS
+   ===================== */
+.item-card-wrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+.item-card-wrap .item-card {
+  margin-bottom: 0;
+  transition: transform 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+.item-swipe-actions {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  display: flex;
+  align-items: stretch;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  overflow: hidden;
+  z-index: 0;
+}
+.swipe-btn-fav {
+  background: #EEEDFE;
+  color: var(--purple-dark);
+  border: none;
+  padding: 0 14px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.swipe-btn-delete {
+  background: var(--red-light);
+  color: var(--red);
+  border: none;
+  padding: 0 14px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* =====================
+   ITEM ACTION MODAL
+   ===================== */
+.item-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.item-action-btn {
+  width: 100%;
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.item-action-btn:hover { background: var(--green-light); }
+.item-action-danger { color: var(--red) !important; }
+.item-action-danger:hover { background: var(--red-light) !important; }
+
+/* =====================
+   PICK FAV LIST
+   ===================== */
+.pick-fav-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.pick-fav-row:last-child { border-bottom: none; }
+.pick-fav-row:hover { background: var(--green-light); border-radius: var(--radius-sm); }
+.pick-fav-emoji { font-size: 22px; width: 34px; text-align: center; }
+.pick-fav-name { font-size: 14px; color: var(--text); font-weight: 500; }
+.pick-fav-count { font-size: 12px; color: var(--hint); }
+
+/* item-card-wrap neemt de gap over van items-list */
+.items-list { gap: 0 !important; }
+.item-card-wrap { margin-bottom: 6px; }
+.item-card-wrap .item-card { margin-bottom: 0; border-radius: var(--radius-md); }
