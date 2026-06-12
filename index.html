@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Boodschappen" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Onze Boodschappen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-wrap">
+    <div class="auth-logo">🛒</div>
+    <h1 class="auth-title" id="auth-title">Inloggen</h1>
+    <p class="auth-sub">Samen de lijst bijhouden, altijd gesynchroniseerd.</p>
+
+    <input type="email"    id="auth-email"    class="auth-input" placeholder="E-mailadres" autocomplete="email" />
+    <input type="password" id="auth-password" class="auth-input" placeholder="Wachtwoord" autocomplete="current-password" style="margin-top:10px" />
+
+    <div id="auth-name-wrap" style="display:none">
+      <p class="auth-hint" style="text-align:left; margin-bottom:4px; margin-top:10px;">Kies een wachtwoord van minimaal 6 tekens.</p>
+    </div>
+
+    <button class="auth-btn" onclick="handleAuth()">
+      <span id="auth-btn-text">Inloggen</span>
+    </button>
+
+    <div id="auth-error" class="auth-error hidden" style="margin-top:10px"></div>
+
+    <p class="auth-hint" style="margin-top:14px" id="auth-switch-text">
+      Nog geen account? <a href="#" onclick="switchAuthMode('register')">Aanmaken</a>
+    </p>
+    <p class="auth-hint" id="auth-forgot" style="margin-top:6px">
+      <a href="#" onclick="handleForgotPassword()">Wachtwoord vergeten?</a>
+    </p>
+  </div>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="screen-loading" class="screen hidden">
+  <div class="loading-wrap">
+    <div class="loading-spinner"></div>
+    <p>Laden…</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="screen-app" class="screen hidden">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">🛒 Onze lijst</span>
+      <span class="topbar-sub" id="sync-status">Verbinden…</span>
+    </div>
+    <div class="topbar-right">
+      <div class="avatars" id="avatars"></div>
+      <button class="btn-icon" onclick="openSettingsModal()" aria-label="Instellingen">
+        <i class="icon">⚙️</i>
+      </button>
+    </div>
+  </div>
+
+  <!-- GOING BANNER -->
+  <div class="going-banner hidden" id="going-banner">
+    <span class="going-icon">🛍️</span>
+    <div class="going-text">
+      <strong id="going-who">Iemand gaat zo boodschappen doen!</strong>
+      <span>Voeg snel nog iets toe</span>
+    </div>
+    <span class="going-timer" id="going-timer">10:00</span>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="list" onclick="switchTab('list')">
+      <span class="tab-icon">📋</span>
+      <span>Lijst</span>
+    </button>
+    <button class="tab" data-tab="favs" onclick="switchTab('favs')">
+      <span class="tab-icon">⭐</span>
+      <span>Favorieten</span>
+    </button>
+    <button class="tab" data-tab="deals" onclick="switchTab('deals')">
+      <span class="tab-icon">🏷️</span>
+      <span>Aanbiedingen</span>
+      <span class="tab-badge hidden" id="deals-badge">0</span>
+    </button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="content">
+
+    <!-- LIST TAB -->
+    <div id="tab-list" class="tab-panel active">
+      <div class="ai-bar">
+        <div class="ai-label">✨ Voeg meerdere producten in één zin toe</div>
+        <div class="ai-row">
+          <input type="text" id="ai-input" class="ai-input" placeholder="bijv. melk, eieren en kwark…" />
+          <button class="btn-ai" id="ai-btn" onclick="handleAIInput()">Voeg toe</button>
+        </div>
+        <div class="ai-parsing hidden" id="ai-parsing">
+          <span class="spinner-sm"></span> Verwerken…
+        </div>
+      </div>
+
+      <div class="list-header">
+        <span class="list-label">Te halen</span>
+        <span class="badge-green" id="todo-count">0</span>
+      </div>
+
+      <div id="todo-groups"></div>
+      <div id="empty-state" class="empty-state hidden">
+        <p>🎉 Lijst is leeg</p>
+        <span>Voeg producten toe met het veld hierboven</span>
+      </div>
+
+      <div id="checked-section" class="hidden">
+        <div class="checked-header" onclick="toggleChecked()">
+          <span class="checked-label">✓ Afgestreept <span id="done-count" class="badge-muted">0</span></span>
+          <span class="chevron" id="checked-chevron">▾</span>
+        </div>
+        <div id="checked-body">
+          <div id="list-done"></div>
+          <button class="btn-clear" onclick="clearChecked()">
+            ✅ Klaar met boodschappen — lijst leegmaken
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAVS TAB -->
+    <div id="tab-favs" class="tab-panel hidden">
+      <div class="list-header">
+        <span class="list-label">Favorietenlijsten</span>
+        <button class="btn-text-green" onclick="openNewFavModal()">+ Nieuwe lijst</button>
+      </div>
+      <div id="fav-list"></div>
+      <div id="fav-empty" class="empty-state hidden">
+        <p>⭐ Nog geen favorieten</p>
+        <span>Maak een lijst aan met de knop hierboven</span>
+      </div>
+    </div>
+
+    <!-- DEALS TAB -->
+    <div id="tab-deals" class="tab-panel hidden">
+      <div class="list-header">
+        <span class="list-label">Aanbiedingen</span>
+        <span class="badge-amber" id="deals-match-count"></span>
+      </div>
+      <div id="deals-filter" class="deals-filter">
+        <button class="filter-btn active" data-filter="all" onclick="filterDeals('all')">Alles</button>
+        <button class="filter-btn" data-filter="ah" onclick="filterDeals('ah')">Albert Heijn</button>
+        <button class="filter-btn" data-filter="jumbo" onclick="filterDeals('jumbo')">Jumbo</button>
+        <button class="filter-btn" data-filter="match" onclick="filterDeals('match')">Match ⭐</button>
+      </div>
+      <div id="deals-list"></div>
+    </div>
+
+  </div>
+
+  <!-- FAB -->
+  <div class="fab-row">
+    <button class="fab-going fab-full" onclick="openGoingModal()">🔔 Ik ga zo boodschappen doen!</button>
+    
+    
+  </div>
+
+</div>
+
+<!-- MODAL: ADD ITEM -->
+<div class="modal-bg hidden" id="modal-add">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Product toevoegen</div>
+    <input type="text" class="modal-input" id="modal-add-input" placeholder="Naam van het product…" autocomplete="off" />
+    <div id="modal-add-preview" class="modal-preview"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-add')">Annuleer</button>
+      <button class="btn-primary" onclick="addFromModal()">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: GOING SHOPPING -->
+<div class="modal-bg hidden" id="modal-going">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Stuur een seintje</div>
+    <div class="modal-body-center">
+      <div class="going-emoji">🛍️</div>
+      <p>Je partner krijgt een melding dat jij zo boodschappen gaat doen. Ze hebben <strong>10 minuten</strong> om nog iets toe te voegen.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-going')">Annuleer</button>
+      <button class="btn-primary" onclick="startGoing()">🔔 Verstuur seintje</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NEW FAV LIST -->
+<div class="modal-bg hidden" id="modal-new-fav">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nieuwe favorietenlijst</div>
+    <input type="text" class="modal-input" id="modal-fav-name" placeholder="Naam, bijv. 'Sportvoeding'" autocomplete="off" />
+    <div class="emoji-picker">
+      <span class="emoji-label">Kies een icoon</span>
+      <div class="emoji-grid" id="emoji-grid"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-new-fav')">Annuleer</button>
+      <button class="btn-primary" onclick="createFavList()">Aanmaken</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SETTINGS -->
+<div class="modal-bg hidden" id="modal-settings">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Instellingen</div>
+    <div class="settings-section">
+      <div class="settings-label">Ingelogd als</div>
+      <div class="settings-value" id="settings-email"></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Jouw koppelcode</div>
+      <div class="settings-value settings-copy" id="settings-koppelcode" onclick="copyKoppelCode()"></div>
+      <div class="settings-hint">Deel deze code met je partner zodat jullie dezelfde lijst zien. Tik om te kopiëren.</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Koppelen met partner</div>
+      <input type="text" class="modal-input" id="settings-partner-code" placeholder="Koppelcode van je partner, bijv. 482-916" style="margin-top:8px" />
+      <button class="btn-primary" style="width:100%;margin-top:8px" onclick="linkPartner()">Koppelen</button>
+    </div>
+    <div class="modal-footer" style="margin-top:16px">
+      <button class="btn-danger" onclick="signOut()">Uitloggen</button>
+      <button class="btn-secondary" onclick="closeModal('modal-settings')">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL: ITEM ACTIES (lang indrukken) -->
+<div class="modal-bg hidden" id="modal-item-actions">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-item-name">Product</div>
+    <div class="item-action-list">
+      <button class="item-action-btn" onclick="itemActionFav()">⭐ Toevoegen aan favorietenlijst</button>
+      <button class="item-action-btn item-action-danger" onclick="itemActionDelete()">🗑️ Verwijderen van lijst</button>
+    </div>
+    <div class="modal-footer" style="margin-top:8px">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('modal-item-actions')">Annuleer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: KIES FAVORIETENLIJST -->
+<div class="modal-bg hidden" id="modal-pick-fav">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Toevoegen aan favoriet</div>
+    <div id="pick-fav-list"></div>
+    <button class="item-action-btn" style="margin-top:8px" onclick="pickFavNew()">＋ Nieuwe lijst aanmaken</button>
+    <div class="modal-footer" style="margin-top:8px">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('modal-pick-fav')">Annuleer</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- MODAL: EDIT FAV LIST -->
+<div class="modal-bg hidden" id="modal-edit-fav">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Lijst bewerken</div>
+    <input type="text" class="modal-input" id="modal-edit-fav-name" placeholder="Naam van de lijst…" autocomplete="off" />
+    <div class="emoji-picker">
+      <span class="emoji-label">Kies een icoon</span>
+      <div class="emoji-grid" id="edit-emoji-grid"></div>
+    </div>
+    <div class="modal-footer" style="margin-top:16px">
+      <button class="btn-danger" onclick="deleteFavList()">🗑️ Verwijderen</button>
+      <button class="btn-secondary" onclick="closeModal('modal-edit-fav')">Annuleer</button>
+      <button class="btn-primary" onclick="saveEditFav()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
