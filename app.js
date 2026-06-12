@@ -666,6 +666,7 @@ window.switchTab = function (tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'deals') renderDeals();
+  if (tab === 'favs')  renderFavs();
 };
 
 // ── MODALS ────────────────────────────────────────────────────
