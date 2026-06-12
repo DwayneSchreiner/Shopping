@@ -388,22 +388,17 @@ function itemHTML(item) {
   const m        = catMeta[item.cat] || catMeta.overig;
   const catClass = 'cat-' + item.cat;
   const catLabel = m.label.split(' ')[0].toLowerCase();
-  return `<div class="item-card-wrap">
-    <div class="item-swipe-actions">
-      <button class="swipe-btn-fav"    onclick="openItemFav('${item.id}')"   title="Favoriet">⭐</button>
-      <button class="swipe-btn-delete" onclick="deleteItem('${item.id}')"    title="Verwijderen">🗑️</button>
+  return `<div class="item-card ${item.checked ? 'checked' : ''}" data-id="${item.id}">
+    <div class="check-circle" onclick="toggleItem('${item.id}')">✓</div>
+    <div class="item-info">
+      <div class="item-name">${escHtml(item.name)}</div>
+      <div class="item-by">door ${escHtml(item.byName || item.by || '?')}</div>
     </div>
-    <div class="item-card ${item.checked ? 'checked' : ''}"
-         onclick="toggleItem('${item.id}')"
-         oncontextmenu="openItemActions(event, '${item.id}'); return false;"
-         data-id="${item.id}">
-      <div class="check-circle">✓</div>
-      <div class="item-info">
-        <div class="item-name">${escHtml(item.name)}</div>
-        <div class="item-by">door ${escHtml(item.byName || item.by || '?')}</div>
-      </div>
-      ${item.deal ? '<span class="item-deal-dot" title="In de aanbieding"></span>' : ''}
-      <span class="item-cat ${catClass}">${catLabel}</span>
+    ${item.deal ? '<span class="item-deal-dot" title="In de aanbieding"></span>' : ''}
+    <span class="item-cat ${catClass}">${catLabel}</span>
+    <div class="item-actions">
+      <button class="item-btn-fav" onclick="openItemFav('${item.id}')" title="Aan favoriet toevoegen">⭐</button>
+      <button class="item-btn-del" onclick="deleteItem('${item.id}')" title="Verwijderen">🗑️</button>
     </div>
   </div>`;
 }
