@@ -582,9 +582,14 @@ window.openSettingsModal = function() { openModal('modal-settings'); };
 
 // ── TABS ──────────────────────────────────────────────────────
 window.switchTab = function(tab) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.remove('active');
+    p.classList.add('hidden');
+  });
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.getElementById('tab-' + tab).classList.add('active');
+  const panel = document.getElementById('tab-' + tab);
+  panel.classList.remove('hidden');
+  panel.classList.add('active');
   if (tab === 'deals') renderDeals();
   if (tab === 'favs')  renderFavs();
 };
