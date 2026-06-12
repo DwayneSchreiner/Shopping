@@ -168,8 +168,9 @@
 
   <!-- FAB -->
   <div class="fab-row">
-    <button class="fab-going" onclick="openGoingModal()">🔔 Ik ga zo!</button>
-    <button class="fab-add" onclick="openAddModal()">+ Product toevoegen</button>
+    <button class="fab-going fab-full" onclick="openGoingModal()">🔔 Ik ga zo boodschappen doen!</button>
+    
+    
   </div>
 
 </div>
@@ -246,6 +247,36 @@
     </div>
   </div>
 </div>
+
+
+<!-- MODAL: ITEM ACTIES (lang indrukken) -->
+<div class="modal-bg hidden" id="modal-item-actions">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-item-name">Product</div>
+    <div class="item-action-list">
+      <button class="item-action-btn" onclick="itemActionFav()">⭐ Toevoegen aan favorietenlijst</button>
+      <button class="item-action-btn item-action-danger" onclick="itemActionDelete()">🗑️ Verwijderen van lijst</button>
+    </div>
+    <div class="modal-footer" style="margin-top:8px">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('modal-item-actions')">Annuleer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: KIES FAVORIETENLIJST -->
+<div class="modal-bg hidden" id="modal-pick-fav">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Toevoegen aan favoriet</div>
+    <div id="pick-fav-list"></div>
+    <button class="item-action-btn" style="margin-top:8px" onclick="pickFavNew()">＋ Nieuwe lijst aanmaken</button>
+    <div class="modal-footer" style="margin-top:8px">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('modal-pick-fav')">Annuleer</button>
+    </div>
+  </div>
+</div>
+
 
 <script type="module" src="app.js"></script>
 </body>
