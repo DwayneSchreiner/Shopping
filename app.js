@@ -80,8 +80,11 @@ function showScreen(id) {
 }
 
 // ── AUTH ─────────────────────────────────────────────────────
+// Vaste URL zodat magic link altijd naar de juiste plek stuurt
+const APP_URL = 'https://dwayneschreiner.github.io/Shopping/';
+
 const ACTION_CODE_SETTINGS = {
-url: window.location.href,
+  url: APP_URL,
   handleCodeInApp: true,
 };
 
@@ -113,13 +116,17 @@ function showAuthError(msg) {
   el.classList.remove('hidden');
 }
 
-// Handle magic link redirect
+// Handle magic link redirect — werkt zowel in browser als PWA
 if (isSignInWithEmailLink(auth, window.location.href)) {
   showScreen('loading');
   let email = window.localStorage.getItem('emailForSignIn');
   if (!email) email = window.prompt('Bevestig je e-mailadres:');
   signInWithEmailLink(auth, email, window.location.href)
-    .then(() => { window.localStorage.removeItem('emailForSignIn'); window.history.replaceState({}, '', '/'); })
+    .then(() => {
+      window.localStorage.removeItem('emailForSignIn');
+      // Verwijder de magic link parameters uit de URL
+      window.history.replaceState({}, '', APP_URL);
+    })
     .catch(e => { showScreen('auth'); showAuthError(e.message); });
 }
 
@@ -576,3 +583,4 @@ document.addEventListener('click', e => {
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
