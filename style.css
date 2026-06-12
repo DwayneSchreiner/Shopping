@@ -704,23 +704,32 @@ html, body {
    AUTH - compactere knop
    ===================== */
 .auth-wrap .btn-primary {
-  padding: 11px;
+  padding: 11px 20px;
   font-size: 14px;
+  width: auto;
+  display: inline-block;
   border-radius: var(--radius-md);
+  margin-top: 14px;
 }
 .auth-wrap {
   padding: 24px 24px;
+  align-items: flex-start;
 }
 .auth-logo {
-  font-size: 40px;
-  margin-bottom: 10px;
+  font-size: 36px;
+  margin-bottom: 8px;
 }
 .auth-title {
-  font-size: 22px;
+  font-size: 20px;
 }
 .auth-sub {
   font-size: 13px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+.auth-input {
+  width: 100%;
+  max-width: 320px;
 }
 
 /* =====================
