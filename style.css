@@ -812,3 +812,43 @@ html, body {
 .items-list { gap: 0 !important; }
 .item-card-wrap { margin-bottom: 6px; }
 .item-card-wrap .item-card { margin-bottom: 0; border-radius: var(--radius-md); }
+
+/* =====================
+   ITEM INLINE ACTIONS (vervangt swipe)
+   ===================== */
+
+/* Check-circle is nu klikbaar, rest van kaart niet */
+.item-card { cursor: default; }
+.check-circle { cursor: pointer; flex-shrink: 0; }
+.check-circle:active { transform: scale(0.9); }
+
+/* Actie-knoppen rechts in de kaart */
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.item-btn-fav,
+.item-btn-del {
+  background: none;
+  border: none;
+  font-size: 16px;
+  padding: 4px 5px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  opacity: 0.55;
+  transition: opacity 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.item-btn-fav:hover, .item-btn-fav:active { opacity: 1; background: var(--purple-light); }
+.item-btn-del:hover, .item-btn-del:active { opacity: 1; background: var(--red-light); }
+
+/* item-cat schuift naar links van de knoppen */
+.item-card .item-cat { margin-left: 6px; }
+
+/* Verberg de oude swipe-structuur */
+.item-card-wrap { display: contents; }
+.item-swipe-actions { display: none; }
