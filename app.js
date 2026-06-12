@@ -388,14 +388,23 @@ function itemHTML(item) {
   const m        = catMeta[item.cat] || catMeta.overig;
   const catClass = 'cat-' + item.cat;
   const catLabel = m.label.split(' ')[0].toLowerCase();
-  return `<div class="item-card ${item.checked ? 'checked' : ''}" onclick="toggleItem('${item.id}')">
-    <div class="check-circle">✓</div>
-    <div class="item-info">
-      <div class="item-name">${escHtml(item.name)}</div>
-      <div class="item-by">door ${escHtml(item.byName || item.by || '?')}</div>
+  return `<div class="item-card-wrap">
+    <div class="item-swipe-actions">
+      <button class="swipe-btn-fav"    onclick="openItemFav('${item.id}')"   title="Favoriet">⭐</button>
+      <button class="swipe-btn-delete" onclick="deleteItem('${item.id}')"    title="Verwijderen">🗑️</button>
     </div>
-    ${item.deal ? '<span class="item-deal-dot" title="In de aanbieding"></span>' : ''}
-    <span class="item-cat ${catClass}">${catLabel}</span>
+    <div class="item-card ${item.checked ? 'checked' : ''}"
+         onclick="toggleItem('${item.id}')"
+         oncontextmenu="openItemActions(event, '${item.id}'); return false;"
+         data-id="${item.id}">
+      <div class="check-circle">✓</div>
+      <div class="item-info">
+        <div class="item-name">${escHtml(item.name)}</div>
+        <div class="item-by">door ${escHtml(item.byName || item.by || '?')}</div>
+      </div>
+      ${item.deal ? '<span class="item-deal-dot" title="In de aanbieding"></span>' : ''}
+      <span class="item-cat ${catClass}">${catLabel}</span>
+    </div>
   </div>`;
 }
 
@@ -403,6 +412,83 @@ window.toggleChecked = function () {
   checkedOpen = !checkedOpen;
   document.getElementById('checked-body').style.display = checkedOpen ? '' : 'none';
   document.getElementById('checked-chevron').classList.toggle('open', checkedOpen);
+};
+
+// ── ITEM ACTIES ───────────────────────────────────────────────
+let activeItemId = null;
+
+window.deleteItem = async function (id) {
+  await deleteDoc(doc(db, 'households', householdId, 'items', id));
+};
+
+window.openItemActions = function (e, id) {
+  e.preventDefault();
+  activeItemId = id;
+  const item = items[id];
+  if (!item) return;
+  document.getElementById('modal-item-name').textContent = item.name;
+  openModal('modal-item-actions');
+};
+
+window.openItemFav = function (id) {
+  activeItemId = id;
+  openPickFavModal();
+};
+
+window.itemActionFav = function () {
+  closeModal('modal-item-actions');
+  openPickFavModal();
+};
+
+window.itemActionDelete = async function () {
+  if (!activeItemId) return;
+  await deleteItem(activeItemId);
+  closeModal('modal-item-actions');
+};
+
+function openPickFavModal() {
+  const favList = Object.values(favs);
+  const item    = items[activeItemId];
+  if (!item) return;
+
+  if (favList.length === 0) {
+    // Geen lijsten — ga direct naar aanmaken
+    closeModal('modal-item-actions');
+    openModal('modal-new-fav');
+    // Vul naam alvast in na aanmaken
+    window._pendingFavItem = item.name;
+    return;
+  }
+
+  document.getElementById('pick-fav-list').innerHTML = favList.map(f => `
+    <div class="pick-fav-row" onclick="addItemToFav('${f.id}')">
+      <span class="pick-fav-emoji">${f.emoji || '⭐'}</span>
+      <div>
+        <div class="pick-fav-name">${escHtml(f.name)}</div>
+        <div class="pick-fav-count">${(f.items||[]).length} producten</div>
+      </div>
+    </div>`).join('');
+
+  openModal('modal-pick-fav');
+}
+
+window.addItemToFav = async function (favId) {
+  const f    = favs[favId];
+  const item = items[activeItemId];
+  if (!f || !item) return;
+  if (!(f.items||[]).includes(item.name)) {
+    const updated = [...(f.items||[]), item.name];
+    await updateDoc(doc(db, 'households', householdId, 'favorites', favId), { items: updated });
+  }
+  closeModal('modal-pick-fav');
+  // Kleine bevestiging
+  const btn = document.querySelector(`[data-id="${activeItemId}"] .item-name`);
+  if (btn) { const orig = btn.textContent; btn.textContent = '✓ Toegevoegd!'; setTimeout(() => { btn.textContent = orig; }, 1200); }
+};
+
+window.pickFavNew = function () {
+  closeModal('modal-pick-fav');
+  openModal('modal-new-fav');
 };
 
 // ── FAVORITES ─────────────────────────────────────────────────
