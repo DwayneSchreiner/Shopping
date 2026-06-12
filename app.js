@@ -471,14 +471,21 @@ window.addItemToFav = async function (favId) {
   const f    = favs[favId];
   const item = items[activeItemId];
   if (!f || !item) return;
+  // Voeg toe als het er nog niet in zit
   if (!(f.items||[]).includes(item.name)) {
     const updated = [...(f.items||[]), item.name];
     await updateDoc(doc(db, 'households', householdId, 'favorites', favId), { items: updated });
   }
+  // Sluit modal en toon bevestiging in de kaart
   closeModal('modal-pick-fav');
-  // Kleine bevestiging
-  const btn = document.querySelector(`[data-id="${activeItemId}"] .item-name`);
-  if (btn) { const orig = btn.textContent; btn.textContent = '✓ Toegevoegd!'; setTimeout(() => { btn.textContent = orig; }, 1200); }
+  closeModal('modal-item-actions');
+  const nameEl = document.querySelector(`[data-id="${activeItemId}"] .item-name`);
+  if (nameEl) {
+    const orig = nameEl.textContent;
+    nameEl.textContent = '✓ Aan favoriet toegevoegd!';
+    nameEl.style.color = 'var(--green)';
+    setTimeout(() => { nameEl.textContent = orig; nameEl.style.color = ''; }, 1500);
+  }
 };
 
 window.pickFavNew = function () {
@@ -489,8 +496,12 @@ window.pickFavNew = function () {
 // ── FAVORITES ─────────────────────────────────────────────────
 function renderFavs() {
   const list = Object.values(favs);
+  // Toon lege staat als er geen lijsten zijn
   document.getElementById('fav-empty').classList.toggle('hidden', list.length > 0);
-  document.getElementById('fav-list').innerHTML = list.map(favCardHTML).join('');
+  document.getElementById('fav-list').innerHTML = '';
+  if (list.length > 0) {
+    document.getElementById('fav-list').innerHTML = list.map(favCardHTML).join('');
+  }
 }
 
 function favCardHTML(f) {
@@ -577,7 +588,8 @@ function renderDeals() {
   const matchCount = DEALS.filter(d => matchIds.has(d.id)).length;
   document.getElementById('deals-match-count').textContent = matchCount + ' matches';
   document.getElementById('deals-badge').textContent       = matchCount;
-  document.getElementById('deals-badge').classList.toggle('hidden', matchCount === 0);
+  // Badge verborgen totdat echte aanbiedingen zijn ingesteld
+  document.getElementById('deals-badge').classList.add('hidden');
   document.getElementById('deals-list').innerHTML = filtered.map(d => `
     <div class="deal-card ${matchIds.has(d.id)?'deal-match':''}">
       <span class="deal-store-badge store-${d.store}">${d.store==='ah'?'AH':'Jumbo'}</span>
