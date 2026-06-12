@@ -18,21 +18,28 @@
 <div id="screen-auth" class="screen active">
   <div class="auth-wrap">
     <div class="auth-logo">🛒</div>
-    <h1 class="auth-title">Onze boodschappen</h1>
+    <h1 class="auth-title" id="auth-title">Inloggen</h1>
     <p class="auth-sub">Samen de lijst bijhouden, altijd gesynchroniseerd.</p>
-    <div id="auth-form">
-      <input type="email" id="auth-email" class="auth-input" placeholder="Jouw e-mailadres" autocomplete="email" />
-      <button class="btn-primary" onclick="sendMagicLink()">
-        <span id="auth-btn-text">Stuur magic link</span>
-      </button>
-      <p class="auth-hint">Je ontvangt een link via e-mail. Eén klik en je bent ingelogd — voor altijd.</p>
+
+    <input type="email"    id="auth-email"    class="auth-input" placeholder="E-mailadres" autocomplete="email" />
+    <input type="password" id="auth-password" class="auth-input" placeholder="Wachtwoord" autocomplete="current-password" style="margin-top:10px" />
+
+    <div id="auth-name-wrap" style="display:none">
+      <p class="auth-hint" style="text-align:left; margin-bottom:4px; margin-top:10px;">Kies een wachtwoord van minimaal 6 tekens.</p>
     </div>
-    <div id="auth-sent" class="hidden">
-      <div class="auth-sent-icon">✉️</div>
-      <p class="auth-sent-text">Link verstuurd! Check je inbox en klik op de link om in te loggen.</p>
-      <button class="btn-secondary" onclick="resetAuthForm()">Ander e-mailadres</button>
-    </div>
-    <div id="auth-error" class="auth-error hidden"></div>
+
+    <button class="btn-primary" style="margin-top:14px" onclick="handleAuth()">
+      <span id="auth-btn-text">Inloggen</span>
+    </button>
+
+    <div id="auth-error" class="auth-error hidden" style="margin-top:10px"></div>
+
+    <p class="auth-hint" style="margin-top:14px" id="auth-switch-text">
+      Nog geen account? <a href="#" onclick="switchAuthMode('register')">Aanmaken</a>
+    </p>
+    <p class="auth-hint" id="auth-forgot" style="margin-top:6px">
+      <a href="#" onclick="handleForgotPassword()">Wachtwoord vergeten?</a>
+    </p>
   </div>
 </div>
 
@@ -224,13 +231,13 @@
       <div class="settings-value" id="settings-email"></div>
     </div>
     <div class="settings-section">
-      <div class="settings-label">Huishouden ID</div>
-      <div class="settings-value settings-copy" id="settings-household" onclick="copyHouseholdId()"></div>
-      <div class="settings-hint">Deel dit ID met je partner zodat jullie dezelfde lijst zien</div>
+      <div class="settings-label">Jouw koppelcode</div>
+      <div class="settings-value settings-copy" id="settings-koppelcode" onclick="copyKoppelCode()"></div>
+      <div class="settings-hint">Deel deze code met je partner zodat jullie dezelfde lijst zien. Tik om te kopiëren.</div>
     </div>
     <div class="settings-section">
-      <div class="settings-label">Partner koppelen</div>
-      <input type="text" class="modal-input" id="settings-partner-id" placeholder="Voer het ID van je partner in…" style="margin-top:8px" />
+      <div class="settings-label">Koppelen met partner</div>
+      <input type="text" class="modal-input" id="settings-partner-code" placeholder="Koppelcode van je partner, bijv. 482-916" style="margin-top:8px" />
       <button class="btn-primary" style="width:100%;margin-top:8px" onclick="linkPartner()">Koppelen</button>
     </div>
     <div class="modal-footer" style="margin-top:16px">
